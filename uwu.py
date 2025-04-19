@@ -51,6 +51,7 @@ import os
 import time
 import requests
 import signal
+import psutil
 
 """Cntrl+c detect"""
 def handle_sigint(signal_number, frame):
@@ -58,6 +59,29 @@ def handle_sigint(signal_number, frame):
     os._exit(0)
 
 signal.signal(signal.SIGINT, handle_sigint)
+
+# Initialize Termux mode before other configurations
+def setup_termux_mode():
+    if IS_TERMUX and config_dict.get("termux_mode", {}).get("enabled", False):
+        # Make a copy of the original config
+        termux_config = config_dict.copy()
+        
+        # Apply Termux-specific configurations
+        if termux_config["termux_mode"].get("disable_web_ui", True):
+            termux_config["website"]["enabled"] = False
+            print("Termux Mode: Web UI disabled")
+        
+        if termux_config["termux_mode"].get("optimize_resources", True):
+            # Optimize for lower resource usage
+            termux_config["apiCache"]["memoryLimit"] = 50
+            termux_config["website"]["refreshInterval"] = 30
+            print("Termux Mode: Resource optimization enabled")
+        
+        # Always enable Termux-specific notification methods
+        termux_config["captcha"]["termux"]["vibrate"]["enabled"] = True
+        
+        return termux_config
+    return config_dict
 
 def compare_versions(current_version, latest_version):
     current_version = current_version.lstrip("v")
@@ -85,13 +109,20 @@ console = Console()
 lock = threading.Lock()
 clear()
 
+# Track start time for uptime calculation
+start_time = time.time()
+
 def load_accounts_dict(file_path="utils/stats.json"):
     with open(file_path, "r") as config_file:
         return json.load(config_file)
 
+# Load initial configuration
 with open("config.json", "r") as config_file:
     config_dict = json.load(config_file)
 
+# Apply Termux-specific settings if in Termux mode
+if IS_TERMUX:
+    config_dict = setup_termux_mode()
 
 console.rule("[bold blue1]:>", style="navy_blue")
 console_width = console.size.width
@@ -125,7 +156,19 @@ def merge_dicts(main, small):
 
 @app.route("/")
 def home():
-    return render_template("index.html", version=version)
+    return render_template("home.html", version=version)
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html", version=version)
+
+@app.route("/settings")
+def settings():
+    return render_template("settings.html", version=version)
+
+@app.route("/docs")
+def docs():
+    return render_template("docs.html", version=version)
 
 @app.route("/nya")
 def nya_home():
@@ -179,6 +222,31 @@ def get_console_logs():
         print(f"Error fetching logs: {e}")
         return jsonify({"status": "error", "message": "An error occurred while fetching logs"}), 500
 
+@app.route("/api/stats", methods=["GET"])
+def get_stats():
+    try:
+        # Load stats data from file
+        stats_data = {}
+        try:
+            with open("utils/stats.json", "r") as stats_file:
+                stats_data = json.load(stats_file)
+        except:
+            pass
+        
+        # Add system stats
+        stats_data["system"] = {
+            "cpu": psutil.cpu_percent(),
+            "memory": psutil.virtual_memory().percent,
+            "uptime": time.time() - start_time
+        }
+        
+        # Add battery info if on mobile
+        if IS_TERMUX:
+            stats_data["system"]["battery"] = check_battery()
+        
+        return jsonify(stats_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 def web_start():
     flaskLog = logging.getLogger("werkzeug")
@@ -186,15 +254,26 @@ def web_start():
     cli = sys.modules["flask.cli"]
     cli.show_server_banner = lambda *x: None
     try:
-        app.run(debug=False, use_reloader=False, port=config_dict["website"]["port"])
+        # Bind to all interfaces (0.0.0.0) to make it accessible from other devices
+        app.run(host='0.0.0.0', debug=False, use_reloader=False, port=config_dict["website"]["port"])
+        print(f"Web server started on port {config_dict['website']['port']}")
+    except OSError as e:
+        if "Address already in use" in str(e):
+            print(f"Error: Port {config_dict['website']['port']} is already in use. Try a different port in config.json.")
+        else:
+            print(f"OSError starting web server: {e}")
     except Exception as e:
-        print(e)
+        print(f"Error starting web server: {e}")
+        print("Make sure Flask is installed properly: pip install flask")
+
 if config_dict["website"]["enabled"]:
     try:
         web_thread = threading.Thread(target=web_start)
+        web_thread.daemon = True  # Make thread exit when main program exits
         web_thread.start()
+        print(f"Web dashboard available at: http://localhost:{config_dict['website']['port']}")
     except Exception as e:
-        print(e)
+        print(f"Failed to start web server thread: {e}")
 
 """"""
 
@@ -415,8 +494,15 @@ class MyClient(commands.Bot):
                 if extension in self.extensions:
                     """skip if already loaded"""
                     self.refresh_commands_dict()
-                    if not self.commands_dict[str(filename[:-3])]:
-                        await self.unload_cog(extension)
+                    cog_name = str(filename[:-3])
+                    try:
+                        # Skip if the cog is not in commands_dict or disabled
+                        if cog_name in self.commands_dict and not self.commands_dict[cog_name]:
+                            await self.unload_cog(extension)
+                    except KeyError:
+                        # If cog isn't in commands_dict, add it with default enabled state
+                        self.commands_dict[cog_name] = True
+                        await self.log(f"Added new cog {cog_name} to commands_dict", "#ffaa00")
                     continue
                 try:
                     await asyncio.sleep(self.random_float(self.config_dict["account"]["commandsStartDelay"]))
@@ -425,10 +511,15 @@ class MyClient(commands.Bot):
                     print(f"Failed to load extension {extension}: {e}")
 
     async def update_config(self):
-        async with self.lock:
-            with open("config.json", "r") as config_file:
-                self.config_dict = json.load(config_file)
-            await self.start_cogs()
+        try:
+            async with self.lock:
+                with open("config.json", "r") as config_file:
+                    self.config_dict = json.load(config_file)
+                await self.start_cogs()
+        except Exception as e:
+            await self.log(f"Error updating config: {e}", "#ff0000")
+            print(f"Error in update_config: {e}")
+            print(traceback.format_exc())
 
     async def unload_cog(self, cog_name):
         try:
@@ -441,6 +532,7 @@ class MyClient(commands.Bot):
         self.commands_dict = {
             "battle": self.config_dict["commands"]["battle"]["enabled"],
             "captcha": True,
+            "channel_switcher": self.config_dict.get("channel_switcher", {}).get("enabled", False),
             "chat": True,
             "coinflip": self.config_dict["gamble"]["coinflip"]["enabled"],
             "commands": True,
@@ -452,6 +544,7 @@ class MyClient(commands.Bot):
             "huntbot": self.config_dict["commands"]["autoHuntBot"]["enabled"],
             "level": self.config_dict["commands"]["lvlGrind"]["enabled"],
             "lottery": self.config_dict["commands"]["lottery"]["enabled"],
+            "messages": True,
             "others": True,
             "owo": self.config_dict["commands"]["owo"]["enabled"],
             "pray": self.config_dict["commands"]["pray"]["enabled"],
@@ -683,6 +776,14 @@ class MyClient(commands.Bot):
         except Exception as e:
             print(e)
         
+        # Initialize Discord API caching
+        try:
+            from utils.api_cache import get_cache_stats
+            cache_stats = get_cache_stats()
+            await self.log(f"Discord API Cache initialized: {cache_stats['memory_cache_size']} memory entries, {cache_stats.get('persistent_cache_size', 0)} persistent entries", "#33245e")
+        except Exception as e:
+            await self.log(f"Failed to initialize Discord API cache: {e}", "#ff0000")
+        
 
     async def setup_hook(self):
         self.owo_bot_id = 408785106942164992
@@ -692,6 +793,9 @@ class MyClient(commands.Bot):
 
         printBox(f'-Loaded {self.user.name}[*].'.center(console_width - 2), 'bold royal_blue1 ')
         listUserIds.append(self.user.id)
+        
+        # Set uptime for tracking
+        self.uptime = time.time()
 
         # Fetch the channel
         self.cm = self.get_channel(self.channel_id)
@@ -774,6 +878,16 @@ def run_bots(tokens_and_channels):
 def run_bot(token, channel_id):
     logging.getLogger("discord.client").setLevel(logging.ERROR)
     client = MyClient(token, channel_id)
+    
+    # Set version for use in termux mode
+    client.version = version
+    
+    # Check if termux mode is enabled and display appropriate message
+    if IS_TERMUX and config_dict.get("termux_mode", {}).get("enabled", False):
+        print(f"Starting in Termux Mode - v{version}")
+        print("Use text commands with prefix: " + config_dict["textCommands"]["prefix"])
+        print("Example: " + config_dict["textCommands"]["prefix"] + "help")
+    
     client.run(token, log_level=logging.ERROR)
 if __name__ == "__main__":
     console.print(owoPanel)
@@ -800,3 +914,20 @@ if __name__ == "__main__":
     console.print("Star the repo in our github page if you want us to continue maintaining this proj :>.", style = "thistle1")
     console.rule(style="navy_blue")
     run_bots(tokens_and_channels)
+
+# Initialize API cache cleanup task
+def cleanup_api_cache():
+    from utils.api_cache import clear_expired_cache
+    while True:
+        try:
+            # Clean cache every hour
+            time.sleep(3600)
+            cleared = clear_expired_cache()
+            if cleared > 0:
+                print(f"Cleared {cleared} expired cache entries")
+        except Exception as e:
+            print(f"Error in cache cleanup task: {e}")
+
+# Start cache cleanup in background
+cache_cleanup_thread = threading.Thread(target=cleanup_api_cache, daemon=True)
+cache_cleanup_thread.start()

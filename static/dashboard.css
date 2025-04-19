@@ -1,0 +1,251 @@
+/*
+This file is part of owo-dusk.
+
+Copyright (c) 2024-present EchoQuill
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+*/
+
+/* Modern top navigation */
+.top-nav {
+  background-color: #14001a;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.nav-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 12px 20px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo img {
+  width: 32px;
+  height: 32px;
+}
+
+.logo span {
+  color: #ff79c3;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.main-nav {
+  display: flex;
+  gap: 5px;
+}
+
+.nav-item {
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 121, 195, 0.1);
+  color: #ff79c3;
+}
+
+.nav-item.active {
+  background-color: rgba(255, 121, 195, 0.2);
+  color: #ff79c3;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+}
+
+.support-btn {
+  background-color: #ff79c3;
+  color: #000;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.support-btn:hover {
+  background-color: #ff8fcb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 121, 195, 0.3);
+}
+
+/* Dashboard container */
+.dashboard-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Cards styling */
+.stats-card {
+  background-color: #1a0a1a;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #2a1a2a;
+}
+
+.overview {
+  grid-column: span 12;
+}
+
+.chart-card {
+  grid-column: span 6;
+  min-height: 300px;
+}
+
+.timeline-card {
+  grid-column: span 12;
+}
+
+.events-card {
+  grid-column: span 6;
+}
+
+.health-card {
+  grid-column: span 6;
+}
+
+.card-title {
+  color: #ff79c3;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #2a1a2a;
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 15px;
+  background-color: rgba(255, 121, 195, 0.1);
+  border-radius: 8px;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ff79c3;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  color: #ddd;
+  font-size: 0.9rem;
+}
+
+/* Chart container */
+.chart-container {
+  height: 250px;
+  width: 100%;
+}
+
+/* Timeline */
+.timeline {
+  margin-top: 10px;
+}
+
+/* Events list */
+.events-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Health metrics */
+.health-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.metric {
+  display: grid;
+  grid-template-columns: 100px 1fr 50px;
+  align-items: center;
+  gap: 10px;
+}
+
+.metric-name {
+  color: #ddd;
+  font-size: 0.9rem;
+}
+
+.progress-bar {
+  height: 10px;
+  background-color: #2a1a2a;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: linear-gradient(90deg, #ff79c3, #ff9bd3);
+  border-radius: 5px;
+  transition: width 0.5s ease;
+}
+
+.metric-value {
+  color: #ddd;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+/* Responsive design */
+@media (max-width: 992px) {
+  .chart-card, .events-card, .health-card {
+    grid-column: span 12;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-wrapper {
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+  }
+  
+  .main-nav {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .nav-actions {
+    width: 100%;
+    justify-content: center;
+    margin-top: 5px;
+  }
+} 

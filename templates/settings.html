@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='imgs/logo.png') }}"
+      type="image/x-icon"
+    />
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='settings.css') }}">
+    <title>OwO-Dusk Settings - {{version}}</title>
+  </head>
+
+  <body>
+    <header class="top-nav">
+      <div class="nav-wrapper">
+        <div class="logo">
+          <img src="{{ url_for('static', filename='imgs/logo.png') }}" alt="OwO-Dusk Logo" />
+          <span>OwO-Dusk</span>
+        </div>
+        <nav class="main-nav">
+          <a href="/" class="nav-item">Home</a>
+          <a href="/dashboard" class="nav-item">Dashboard</a>
+          <a href="/settings" class="nav-item active">Settings</a>
+        </nav>
+        <div class="nav-actions">
+          <a href="https://discord.gg/RMbZZDf2fa" target="_blank" class="support-btn">Support Server</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="settings-container">
+      <div class="sidebar">
+        <ul class="settings-nav">
+          <li class="settings-nav-item active" data-target="general">General Settings</li>
+          <li class="settings-nav-item" data-target="commands">Commands</li>
+          <li class="settings-nav-item" data-target="captcha">Captcha Prevention</li>
+          <li class="settings-nav-item" data-target="gamble">Gambling</li>
+          <li class="settings-nav-item" data-target="notification">Notifications</li>
+          <li class="settings-nav-item" data-target="advanced">Advanced</li>
+        </ul>
+      </div>
+
+      <div class="settings-content">
+        <!-- General Settings -->
+        <div class="settings-panel active" id="general">
+          <h2 class="panel-title">General Settings</h2>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Bot Appearance</h3>
+            <div class="setting-item">
+              <div class="setting-label">Offline Status</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="offlineStatus">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-description">Keep bot status as offline</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Typing Indicator</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="typingIndicator" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-description">Show typing indicator when sending messages</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Silent Messages</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="silentMessages">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-description">Send messages without notifications</div>
+            </div>
+          </div>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Command Prefix</h3>
+            <div class="setting-item">
+              <div class="setting-label">Bot Prefix</div>
+              <div class="setting-control">
+                <input type="text" id="prefix" class="setting-input" value="w">
+              </div>
+              <div class="setting-description">Prefix for OwO commands</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Use Slash Commands</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="useSlashCommands" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-description">Use slash commands instead of text commands</div>
+            </div>
+          </div>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Dashboard</h3>
+            <div class="setting-item">
+              <div class="setting-label">Enable Website</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="websiteEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-description">Enable web dashboard</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Dashboard Port</div>
+              <div class="setting-control">
+                <input type="number" id="websitePort" class="setting-input" value="1200">
+              </div>
+              <div class="setting-description">Port to run the dashboard on</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Data Refresh Interval</div>
+              <div class="setting-control">
+                <div class="range-container">
+                  <input type="range" id="refreshInterval" min="5" max="60" value="15" class="slider">
+                  <span class="range-value">15s</span>
+                </div>
+              </div>
+              <div class="setting-description">How often to refresh dashboard data</div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Website Security</div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="websiteSecurity">Configure</button>
+              </div>
+              <div class="setting-description">Configure login, permissions and security</div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Website Features</div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="websiteFeatures">Configure</button>
+              </div>
+              <div class="setting-description">Enable or disable dashboard features</div>
+            </div>
+
+            <div class="setting-item">
+              <div class="setting-label">Website Appearance</div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="websiteAppearance">Configure</button>
+              </div>
+              <div class="setting-description">Customize dashboard appearance</div>
+            </div>
+          </div>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Channel Switcher</h3>
+            <div class="setting-item">
+              <div class="setting-label">Enable Channel Switcher</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="channelSwitcherEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-description">Automatically switch between channels</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Channel Switcher Settings</div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="channelSwitcher">Configure</button>
+              </div>
+              <div class="setting-description">Configure channel list, intervals, and behavior</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Commands Settings -->
+        <div class="settings-panel" id="commands">
+          <h2 class="panel-title">Commands Settings</h2>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Basic Commands</h3>
+            
+            <div class="setting-item">
+              <div class="setting-label">Hunt</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="huntEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="hunt">Configure</button>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Battle</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="battleEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="battle">Configure</button>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">OwO</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="owoEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="owo">Configure</button>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Level Grind</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="levelEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="level">Configure</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Other Commands</h3>
+            
+            <div class="setting-item">
+              <div class="setting-label">Pray/Curse</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="prayEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="pray">Configure</button>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Cookie</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="cookieEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="cookie">Configure</button>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Sell/Sacrifice</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="sellEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="sell">Configure</button>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">HuntBot</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="huntbotEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="huntbot">Configure</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Auto Features</h3>
+            
+            <div class="setting-item">
+              <div class="setting-label">Auto Daily</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="dailyEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Auto Lottery</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="lotteryEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Auto Use Lootbox</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="lootboxEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Auto Use Crate</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="crateEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Auto Use Gems</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="gemsEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="gems">Configure</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Captcha Settings -->
+        <div class="settings-panel" id="captcha">
+          <h2 class="panel-title">Captcha Prevention</h2>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Randomization</h3>
+            
+            <div class="setting-item">
+              <div class="setting-label">Random Misspelling</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="misspellEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="misspell">Configure</button>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Random Sleep</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="sleepEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="sleep">Configure</button>
+              </div>
+            </div>
+          </div>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Notification Methods</h3>
+            
+            <div class="setting-item">
+              <div class="setting-label">Webhook Notifications</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="webhookEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="webhook">Configure</button>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Desktop Notifications</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="desktopNotifEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="desktop">Configure</button>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Audio Notifications</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="audioEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="audio">Configure</button>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Mobile Notifications</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="mobileEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="mobile">Configure</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Gambling Settings -->
+        <div class="settings-panel" id="gamble">
+          <h2 class="panel-title">Gambling Settings</h2>
+          
+          <div class="settings-group">
+            <h3 class="group-title">General Gambling</h3>
+            
+            <div class="setting-item">
+              <div class="setting-label">Allotted Amount</div>
+              <div class="setting-control">
+                <input type="number" id="gambleAmount" class="setting-input" value="30000">
+              </div>
+              <div class="setting-description">Maximum amount to use for gambling (cowoncy)</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Goal System</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="goalEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-description">Stop gambling after reaching a specific goal</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Goal Amount</div>
+              <div class="setting-control">
+                <input type="number" id="goalAmount" class="setting-input" value="300">
+              </div>
+              <div class="setting-description">Target amount to reach before stopping</div>
+            </div>
+          </div>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Game Types</h3>
+            
+            <div class="setting-item">
+              <div class="setting-label">Coinflip</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="coinflipEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="coinflip">Configure</button>
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Slots</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="slotsEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-control-actions">
+                <button class="setting-btn" data-settings="slots">Configure</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Notification Settings -->
+        <div class="settings-panel" id="notification">
+          <h2 class="panel-title">Notification Settings</h2>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Discord Webhook</h3>
+            
+            <div class="setting-item">
+              <div class="setting-label">Webhook URL</div>
+              <div class="setting-control">
+                <input type="text" id="webhookUrl" class="setting-input" placeholder="Discord webhook URL">
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Captcha Webhook URL</div>
+              <div class="setting-control">
+                <input type="text" id="webhookCaptchaUrl" class="setting-input" placeholder="Optional separate webhook for captchas">
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">User ID to Ping</div>
+              <div class="setting-control">
+                <input type="text" id="webhookPingId" class="setting-input" placeholder="Discord User ID">
+              </div>
+              <div class="setting-description">User to ping when captcha is detected</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Log All Events</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="webhookUselessLog">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-description">Log all events to webhook (not just captchas)</div>
+            </div>
+          </div>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Captcha Notification Content</h3>
+            
+            <div class="setting-item">
+              <div class="setting-label">Captcha Message</div>
+              <div class="setting-control">
+                <input type="text" id="captchaContent" class="setting-input" value="Captcha Detected: {username} in {channelname}, captcha type: {captchatype}">
+              </div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Ban Message</div>
+              <div class="setting-control">
+                <input type="text" id="bannedContent" class="setting-input" value="{username} Banned from OwO!">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Advanced Settings -->
+        <div class="settings-panel" id="advanced">
+          <h2 class="panel-title">Advanced Settings</h2>
+          
+          <div class="settings-group">
+            <h3 class="group-title">System</h3>
+            
+            <div class="setting-item">
+              <div class="setting-label">Debug Mode</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="debugEnabled" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-description">Show detailed debug logs</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Log to File</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="logFileEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-description">Save logs to a text file</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Battery Check</div>
+              <div class="setting-control">
+                <label class="toggle">
+                  <input type="checkbox" id="batteryCheckEnabled">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <div class="setting-description">Monitor battery level on mobile devices</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Minimum Battery %</div>
+              <div class="setting-control">
+                <input type="number" id="minBattery" class="setting-input" value="15">
+              </div>
+              <div class="setting-description">Stop bot when battery reaches this level</div>
+            </div>
+            
+            <div class="setting-item">
+              <div class="setting-label">Battery Check Interval</div>
+              <div class="setting-control">
+                <input type="number" id="batteryInterval" class="setting-input" value="120">
+              </div>
+              <div class="setting-description">Seconds between battery checks</div>
+            </div>
+          </div>
+          
+          <div class="settings-group">
+            <h3 class="group-title">Actions</h3>
+            
+            <div class="setting-item action-item">
+              <button class="action-btn" id="exportSettings">Export Settings</button>
+              <div class="setting-description">Export all settings to a file</div>
+            </div>
+            
+            <div class="setting-item action-item">
+              <button class="action-btn" id="importSettings">Import Settings</button>
+              <div class="setting-description">Import settings from a file</div>
+            </div>
+            
+            <div class="setting-item action-item">
+              <button class="action-btn danger" id="resetSettings">Reset All Settings</button>
+              <div class="setting-description">Reset all settings to default values</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal for configuration dialogs -->
+    <div class="modal" id="configModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modalTitle">Configure Settings</h3>
+          <span class="modal-close">&times;</span>
+        </div>
+        <div class="modal-body" id="modalBody">
+          <!-- Content will be dynamically loaded -->
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn cancel" id="modalCancel">Cancel</button>
+          <button class="modal-btn save" id="modalSave">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="saveToast">Settings saved successfully!</div>
+
+    <script src="{{ url_for('static', filename='settings.js') }}"></script>
+  </body>
+</html> 

@@ -1,0 +1,12 @@
+discord.py-self==2.0.0
+Flask==2.0.1
+rich==10.16.2
+aiohttp==3.8.1
+pytz==2021.3
+psutil==5.9.0
+plyer==2.0.0
+requests==2.27.1
+PyNaCl==1.5.0
+pyaudio==0.2.12
+pyautogui==0.9.53
+websockets==10.3

@@ -142,3 +142,59 @@ If notifications aren't working on macOS:
 ## License
 
 This project is licensed under the GPL-3.0 License - see the LICENSE file for details.
+
+## Termux Mode
+
+OwO-Dusk provides a special Termux mode optimized for mobile devices. This mode disables resource-intensive GUI features and provides text-based control for better resource efficiency.
+
+### Enabling Termux Mode
+
+1. Edit `config.json` and set `"termux_mode": { "enabled": true }`
+2. Restart the bot
+
+### Termux Mode Text Commands
+
+Use the following commands with the `.` prefix (configurable):
+
+- `.stop` - Stop the bot
+- `.start` - Start the bot
+- `.status` - Display bot status
+- `.info` - Show bot information
+- `.stats` - Show statistics
+- `.cash` - Check current balance
+- `.commands` - List available commands
+- `.help` - Display help
+- `.restart` - Restart bot processes
+
+### Termux Mode Benefits
+
+- Lower CPU and memory usage
+- More efficient battery consumption
+- Reduced bandwidth usage
+- Faster and more responsive operation
+
+## Installation via Git
+
+```bash
+git clone https://github.com/echoqueill/owo-dusk.git
+cd owo-dusk
+pip install -r requirements.txt
+```
+
+## Basic Usage
+
+1. Edit `config.json` according to your needs
+2. Edit `tokens.txt` with your Discord token and channel ID
+3. Run the bot:
+
+```bash
+python uwu.py
+```
+
+## Configuration
+
+See `config.json` for complete configuration options.
+
+## Security Note
+
+Using selfbots may violate Discord's Terms of Service. Use at your own risk.

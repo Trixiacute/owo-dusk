@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='imgs/logo.png') }}"
+      type="image/x-icon"
+    />
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <title>OwO-Dusk Home - {{version}}</title>
+  </head>
+
+  <body>
+    <div class="home-container">
+      <div class="home-content">
+        <h1>Welcome to OwO-Dusk</h1>
+        <p>The ultimate Discord OwO bot automation suite</p>
+        
+        <div class="main-buttons">
+          <a href="/dashboard" class="main-btn">Dashboard</a>
+          <a href="/settings" class="main-btn">Settings</a>
+        </div>
+        
+        <div class="secondary-buttons">
+          <a href="https://discord.gg/RMbZZDf2fa" target="_blank" class="secondary-btn">
+            💬 Support Server
+          </a>
+          <a href="https://github.com/echoqueill/owo-dusk" target="_blank" class="secondary-btn">
+            📦 GitHub
+          </a>
+          <a href="/docs" class="secondary-btn">
+            📚 Documentation
+          </a>
+          <a href="/nya" class="secondary-btn">
+            🐱 Nya
+          </a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html> 

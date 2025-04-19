@@ -42,6 +42,112 @@ body {
   color: #fff;
 }
 
+/* Modern Navbar Styles */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(10, 0, 10, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: auto;
+  min-height: 60px;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 10px 20px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+  margin-left: 0;
+}
+
+.lt {
+  color: #ff79c3;
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-left: 0;
+  margin-right: 10px;
+}
+
+.ltm {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.nav-link {
+  color: #ffffff;
+  text-decoration: none;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin: 0 2px;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 121, 195, 0.1);
+  color: #ff79c3;
+}
+
+.nav-link.active {
+  background-color: rgba(255, 121, 195, 0.2);
+  color: #ff79c3;
+}
+
+.support {
+  display: flex;
+  align-items: center;
+  position: relative;
+  right: 0;
+}
+
+.ss {
+  background-color: #ff79c3;
+  color: #000;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: auto;
+  width: auto;
+}
+
+.ss:hover {
+  background-color: #ff91ce;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255, 121, 195, 0.4);
+}
+
+/* Legacy styles below for compatibility with existing code */
 .logo,
 nav {
   align-items: center;
@@ -49,51 +155,9 @@ nav {
 
 nav {
   width: 100%;
-  height: 57px;
+  height: auto;
+  min-height: 57px;
   display: flex;
-}
-.logo {
-  display: grid;
-  grid-template-columns: 42px 91px 198px; /*width of three items*/
-  grid-template-rows: 80px;
-  gap: 0 0; /* No Gap between items*/
-  grid-auto-flow: row;
-  grid-template-areas: ". . .";
-}
-.icon {
-  width: 42px;
-  margin-left: 8px;
-}
-
-.lt,
-.ss {
-  color: #ff79c3;
-}
-
-.lt {
-  /*'owo-dusk' text*/
-  font-size: 20px;
-  width: 91px;
-  margin-left: 15px;
-}
-
-.ss {
-  /*support server button*/
-  height: 45px;
-  width: 160px;
-  background-color: #080808;
-  border: 0;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.support {
-  position: absolute;
-  right: 8px;
-}
-.login {
-  position: absolute;
-  right: 8px;
 }
 
 .container {
@@ -103,7 +167,7 @@ nav {
   grid-template-rows: 1fr 1fr;
   gap: 15px 15px;
   grid-auto-flow: row;
-  grid-template-areas: "misc cmds cd adds" "balance cmds gamble extra"; /*"misc cmds cd adds" "balance cmds cd extra";*/
+  grid-template-areas: "misc cmds cd adds" "balance cmds gamble extra";
 }
 
 .misc {

@@ -67,6 +67,31 @@ class Battle(commands.Cog):
         except Exception as e:
             print(e)
 
+    # Implementasi metode dengan cache untuk mengambil pesan channel
+    async def get_cached_channel_history(self, limit=10):
+        """Get channel history with caching to reduce API calls"""
+        try:
+            from utils.discord_api_helper import cached_channel_messages
+            
+            channel_id = str(self.bot.cm.id)
+            messages = await cached_channel_messages(self.bot.session, channel_id, limit)
+            
+            return messages
+        except ImportError:
+            # Fallback to regular history if caching module not available
+            messages = []
+            async for message in self.bot.cm.history(limit=limit):
+                messages.append({
+                    "id": message.id,
+                    "content": message.content,
+                    "author": {"id": message.author.id},
+                    "timestamp": message.created_at.isoformat()
+                })
+            return messages
+        except Exception as e:
+            await self.bot.log(f"Error getting cached channel history: {e}", "#ff0000")
+            return []
+
 async def setup(bot):
     await bot.add_cog(Battle(bot))
     

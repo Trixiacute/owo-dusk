@@ -2,12 +2,75 @@
     "setprefix": "w",
     "typingIndicator": true,
     "offlineStatus": false,
-    "useSlashCommands": true,
+    "useSlashCommands": false,
     "silentTextMessages": false,
+    "termux_mode": {
+        "enabled": false,
+        "optimize_resources": true,
+        "minimal_logging": true,
+        "disable_web_ui": true,
+        "extended_text_commands": true,
+        "status_interval": 300
+    },
+    "channel_switcher": {
+        "enabled": true,
+        "channels": [],
+        "threads": {
+            "enabled": false,
+            "parent_channel": 0,
+            "thread_ids": []
+        },
+        "switch_interval": [
+            5,
+            15
+        ],
+        "commands_per_switch": [
+            3,
+            8
+        ],
+        "smart_switching": true,
+        "switch_on_slowmode": true,
+        "avoid_active_channels": true,
+        "auto_discover": true,
+        "auto_create_thread": true,
+        "auto_create_channel": false,
+        "include_large_servers": false,
+        "smart_selection": true,
+        "max_threads_per_channel": 3,
+        "safety_features": {
+            "delete_inactive_threads": true,
+            "prefer_threads_over_channels": true,
+            "min_safety_score": 40
+        }
+    },
     "website": {
         "enabled": true,
         "port": 1200,
-        "refreshInterval": 15
+        "refreshInterval": 15,
+        "security": {
+            "enabled": false,
+            "login_required": false,
+            "username": "admin",
+            "password": "changeme",
+            "allow_config_edit": true,
+            "ip_whitelist": [],
+            "session_timeout": 3600
+        },
+        "features": {
+            "dashboard": true,
+            "settings": true,
+            "stats": true,
+            "logs": true,
+            "commands": true,
+            "restart": true
+        },
+        "appearance": {
+            "theme": "dark",
+            "accent_color": "#8fc1a2",
+            "show_username": true,
+            "show_avatar": true,
+            "custom_title": "OwO Dusk Dashboard"
+        }
     },
     "account": {
         "startupDelay": [
@@ -106,7 +169,7 @@
         },
         "cookie": {
             "enabled": true,
-            "userid": 408785106942164992,
+            "userid": 408785106942165000,
             "pingUser": false
         },
         "shop": {
@@ -178,9 +241,9 @@
     "giveawayJoiner": {
         "enabled": true,
         "channelsToJoin": [
-            1099453684691243098,
-            1168797748343099444,
-            1168797827464429618
+            1099453684691243100,
+            1168797748343099400,
+            1168797827464429600
         ],
         "cooldown": [
             40,
@@ -247,7 +310,28 @@
         "prefix": ".",
         "commandToStopUser": "stop",
         "commandToStartUser": "start",
-        "allowedUsers": []
+        "allowedUsers": [],
+        "termux_commands": {
+            "status": "status",
+            "info": "info",
+            "stats": "stats",
+            "cash": "cash",
+            "commands": "commands",
+            "help": "help",
+            "restart": "restart"
+        },
+        "channel_commands": {
+            "switch": "switch",
+            "channels": "channels",
+            "addchannel": "addchannel",
+            "removechannel": "removechannel",
+            "addthread": "addthread",
+            "removethread": "removethread",
+            "createthread": "createthread",
+            "createchannel": "createchannel",
+            "discover": "discover",
+            "safety": "safety"
+        }
     },
     "autoUse": {
         "gems": {
@@ -278,8 +362,8 @@
         "enabled": false,
         "webhookUselessLog": false,
         "webhookUrl": "webhook url here",
-        "webhookCaptchaUrl": null,
-        "webhookUserIdToPingOnCaptcha": 1
+        "webhookCaptchaUrl": "",
+        "webhookUserIdToPingOnCaptcha": "1"
     },
     "console": {
         "runConsoleCommandOnCaptcha": false,
@@ -328,6 +412,18 @@
         "enabled": false,
         "minPercentage": 15,
         "refreshInterval": 120
+    },
+    "apiCache": {
+        "enabled": true,
+        "memoryLimit": 100,
+        "cleanupInterval": 3600,
+        "ttlSettings": {
+            "message_history": 60,
+            "channel_info": 3600,
+            "user_info": 3600,
+            "guild_info": 7200,
+            "static_assets": 86400
+        }
     },
     "news": true
 }

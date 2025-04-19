@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='imgs/logo.png') }}"
+      type="image/x-icon"
+    />
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>OwO-Dusk Dashboard - {{version}}</title>
+  </head>
+
+  <body>
+    <header class="top-nav">
+      <div class="nav-wrapper">
+        <div class="logo">
+          <img src="{{ url_for('static', filename='imgs/logo.png') }}" alt="OwO-Dusk Logo" />
+          <span>OwO-Dusk</span>
+        </div>
+        <nav class="main-nav">
+          <a href="/" class="nav-item">Home</a>
+          <a href="/dashboard" class="nav-item active">Dashboard</a>
+          <a href="/settings" class="nav-item">Settings</a>
+        </nav>
+        <div class="nav-actions">
+          <a href="https://discord.gg/RMbZZDf2fa" target="_blank" class="support-btn">Support Server</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="dashboard-container">
+      <!-- Stats Overview -->
+      <div class="stats-card overview">
+        <h2 class="card-title">Statistics Overview</h2>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value" id="total-commands">0</div>
+            <div class="stat-label">Commands Sent</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="total-currency">0</div>
+            <div class="stat-label">Total Earned</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="runtime">0h</div>
+            <div class="stat-label">Runtime</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="success-rate">0%</div>
+            <div class="stat-label">Success Rate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Currency Chart -->
+      <div class="stats-card chart-card">
+        <h2 class="card-title">Currency Earned</h2>
+        <div class="chart-container">
+          <canvas id="currencyChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Commands Chart -->
+      <div class="stats-card chart-card">
+        <h2 class="card-title">Commands Executed</h2>
+        <div class="chart-container">
+          <canvas id="commandsChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Activity Timeline -->
+      <div class="stats-card timeline-card">
+        <h2 class="card-title">Activity Timeline</h2>
+        <div class="timeline">
+          <div id="timeline-content">
+            <!-- Timeline content will be populated by JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Events -->
+      <div class="stats-card events-card">
+        <h2 class="card-title">Recent Events</h2>
+        <div class="events-list" id="events-list">
+          <!-- Events will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- System Health -->
+      <div class="stats-card health-card">
+        <h2 class="card-title">System Health</h2>
+        <div class="health-metrics">
+          <div class="metric">
+            <span class="metric-name">CPU Usage:</span>
+            <div class="progress-bar">
+              <div class="progress" id="cpu-usage" style="width: 0%"></div>
+            </div>
+            <span class="metric-value">0%</span>
+          </div>
+          <div class="metric">
+            <span class="metric-name">Memory:</span>
+            <div class="progress-bar">
+              <div class="progress" id="memory-usage" style="width: 0%"></div>
+            </div>
+            <span class="metric-value">0%</span>
+          </div>
+          <div class="metric">
+            <span class="metric-name">Latency:</span>
+            <div class="progress-bar">
+              <div class="progress" id="latency" style="width: 0%"></div>
+            </div>
+            <span class="metric-value">0ms</span>
+          </div>
+          <div class="metric" id="battery-container">
+            <span class="metric-name">Battery:</span>
+            <div class="progress-bar">
+              <div class="progress" id="battery" style="width: 0%"></div>
+            </div>
+            <span class="metric-value">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+  </body>
+</html> 

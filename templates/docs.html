@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='imgs/logo.png') }}"
+      type="image/x-icon"
+    />
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='docs.css') }}">
+    <title>OwO-Dusk Documentation - {{version}}</title>
+  </head>
+
+  <body>
+    <header class="top-nav">
+      <div class="nav-wrapper">
+        <div class="logo">
+          <img src="{{ url_for('static', filename='imgs/logo.png') }}" alt="OwO-Dusk Logo" />
+          <span>OwO-Dusk</span>
+        </div>
+        <nav class="main-nav">
+          <a href="/" class="nav-item">Home</a>
+          <a href="/dashboard" class="nav-item">Dashboard</a>
+          <a href="/settings" class="nav-item">Settings</a>
+          <a href="/docs" class="nav-item active">Docs</a>
+        </nav>
+        <div class="nav-actions">
+          <a href="https://discord.gg/RMbZZDf2fa" target="_blank" class="support-btn">Support Server</a>
+        </div>
+      </div>
+    </header>
+
+    <div class="docs-container">
+      <div class="docs-sidebar">
+        <h3>Documentation</h3>
+        <ul class="docs-nav">
+          <li class="active"><a href="#getting-started">Getting Started</a></li>
+          <li><a href="#installation">Installation</a></li>
+          <li><a href="#configuration">Configuration</a></li>
+          <li><a href="#commands">Commands</a></li>
+          <li><a href="#captcha">Captcha Prevention</a></li>
+          <li><a href="#troubleshooting">Troubleshooting</a></li>
+          <li><a href="#api">API Reference</a></li>
+        </ul>
+      </div>
+
+      <div class="docs-content">
+        <section id="getting-started">
+          <h1>Getting Started with OwO-Dusk</h1>
+          <p>Welcome to the OwO-Dusk documentation. This guide will help you set up and use OwO-Dusk effectively.</p>
+          
+          <h2>What is OwO-Dusk?</h2>
+          <p>OwO-Dusk is an automation tool for the Discord OwO bot. It helps automate repetitive tasks and provides a dashboard to monitor your progress.</p>
+          
+          <div class="info-box">
+            <div class="info-icon">ℹ️</div>
+            <div class="info-content">
+              <strong>Important:</strong> This documentation is a work in progress. Some sections may be incomplete.
+            </div>
+          </div>
+          
+          <h2>Requirements</h2>
+          <ul>
+            <li>Python 3.8 or higher</li>
+            <li>Discord account with access to OwO bot</li>
+            <li>Discord token (for self-bot functionality)</li>
+          </ul>
+        </section>
+        
+        <section id="installation">
+          <h1>Installation</h1>
+          <p>Follow these steps to install OwO-Dusk on your system:</p>
+          
+          <h2>Clone the Repository</h2>
+          <div class="code-block">
+            <pre><code>git clone https://github.com/echoqueill/owo-dusk.git
+cd owo-dusk</code></pre>
+          </div>
+          
+          <h2>Install Dependencies</h2>
+          <div class="code-block">
+            <pre><code>pip install -r requirements.txt</code></pre>
+          </div>
+          
+          <h2>Configure Settings</h2>
+          <p>Create a copy of the <code>config.example.json</code> file and name it <code>config.json</code>. Edit the file to add your Discord token and other settings.</p>
+          
+          <h2>Run the Bot</h2>
+          <div class="code-block">
+            <pre><code>python uwu.py</code></pre>
+          </div>
+        </section>
+        
+        <div class="placeholder-notice">
+          <p>The rest of the documentation is under development.</p>
+          <p>Please check the <a href="https://github.com/echoqueill/owo-dusk">GitHub repository</a> for more information or join our <a href="https://discord.gg/RMbZZDf2fa">Discord Support Server</a> for help.</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Handle sidebar navigation
+        const navLinks = document.querySelectorAll('.docs-nav li a');
+        
+        navLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            const navItems = document.querySelectorAll('.docs-nav li');
+            navItems.forEach(item => item.classList.remove('active'));
+            this.parentElement.classList.add('active');
+          });
+        });
+      });
+    </script>
+  </body>
+</html> 
