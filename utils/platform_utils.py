@@ -154,4 +154,54 @@ def load_env_variables():
         from dotenv import load_dotenv
         load_dotenv()
     except ImportError:
-        print("dotenv module not found. Skipping .env loading.") 
+        print("dotenv module not found. Skipping .env loading.")
+
+def termux_wakelock_acquire():
+    """Acquire wake lock on Termux to prevent device from sleeping.
+    Returns True if successful, False otherwise."""
+    if not IS_TERMUX:
+        return False
+    
+    try:
+        result = subprocess.run(["termux-wake-lock"], capture_output=True, text=True)
+        return result.returncode == 0
+    except (FileNotFoundError, subprocess.SubprocessError):
+        return False
+
+def termux_wakelock_release():
+    """Release wake lock on Termux.
+    Returns True if successful, False otherwise."""
+    if not IS_TERMUX:
+        return False
+    
+    try:
+        result = subprocess.run(["termux-wake-unlock"], capture_output=True, text=True)
+        return result.returncode == 0
+    except (FileNotFoundError, subprocess.SubprocessError):
+        return False
+
+def check_termux_api_installed():
+    """Check if termux-api package is installed.
+    Returns True if installed, False otherwise."""
+    if not IS_TERMUX:
+        return False
+    
+    try:
+        result = subprocess.run(["pkg", "list-installed", "termux-api"], 
+                               capture_output=True, text=True)
+        return "termux-api" in result.stdout
+    except (FileNotFoundError, subprocess.SubprocessError):
+        return False
+
+def install_termux_api():
+    """Install termux-api package if possible.
+    Returns True if successful, False otherwise."""
+    if not IS_TERMUX:
+        return False
+    
+    try:
+        result = subprocess.run(["pkg", "install", "-y", "termux-api"], 
+                              capture_output=True, text=True)
+        return result.returncode == 0
+    except (FileNotFoundError, subprocess.SubprocessError):
+        return False 

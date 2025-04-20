@@ -10,7 +10,31 @@
         "minimal_logging": true,
         "disable_web_ui": true,
         "extended_text_commands": true,
-        "status_interval": 300
+        "status_interval": 300,
+        "use_wake_lock": true
+    },
+    "anti_detection": {
+        "enabled": true,
+        "human_behavior": {
+            "typing_speed": "average",
+            "activity_pattern": "auto",
+            "randomize_delays": true,
+            "fatigue_simulation": true,
+            "auto_breaks": true,
+            "scheduled_inactive_periods": true
+        },
+        "command_timing": {
+            "randomize_cooldowns": true,
+            "variation_percent": 15,
+            "natural_clustering": true,
+            "repeat_commands": true
+        },
+        "active_hours": {
+            "use_profile": true,
+            "inactive_overnight": true,
+            "reduced_activity_work_hours": true,
+            "weekend_variation": true
+        }
     },
     "channel_switcher": {
         "enabled": true,
@@ -62,14 +86,27 @@
             "stats": true,
             "logs": true,
             "commands": true,
-            "restart": true
+            "restart": true,
+            "advanced_analytics": true,
+            "pet_stats": true,
+            "export_data": true,
+            "notification_settings": true
         },
         "appearance": {
             "theme": "dark",
             "accent_color": "#8fc1a2",
             "show_username": true,
             "show_avatar": true,
-            "custom_title": "OwO Dusk Dashboard"
+            "custom_title": "OwO Dusk Dashboard",
+            "enable_animations": true,
+            "compact_mode": false
+        },
+        "dashboard": {
+            "refresh_rate": 10,
+            "default_view": "overview",
+            "chart_history_length": 100,
+            "show_trend_indicators": true,
+            "auto_refresh": true
         }
     },
     "account": {

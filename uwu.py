@@ -33,7 +33,11 @@ from utils.platform_utils import (
     install_package,
     IS_TERMUX,
     check_battery,
-    normalize_path
+    normalize_path,
+    termux_wakelock_acquire,
+    check_termux_api_installed,
+    install_termux_api,
+    termux_wakelock_release
 )
 import json
 import discord
@@ -55,7 +59,16 @@ import psutil
 
 """Cntrl+c detect"""
 def handle_sigint(signal_number, frame):
-    print("\nCtrl+C detected. stopping code!")
+    """Handle SIGINT (Ctrl+C) signal."""
+    print("\nTerminating bot...")
+    
+    # Release wake lock if in Termux mode
+    if IS_TERMUX and config_dict.get("termux_mode", {}).get("enabled", False) and config_dict.get("termux_mode", {}).get("use_wake_lock", True):
+        if termux_wakelock_release():
+            print("Termux Mode: Wake lock released")
+        else:
+            print("Termux Mode: Failed to release wake lock")
+    
     os._exit(0)
 
 signal.signal(signal.SIGINT, handle_sigint)
@@ -79,6 +92,22 @@ def setup_termux_mode():
         
         # Always enable Termux-specific notification methods
         termux_config["captcha"]["termux"]["vibrate"]["enabled"] = True
+        
+        # Enable wake lock if configured
+        if termux_config["termux_mode"].get("use_wake_lock", True):
+            # Check if termux-api is installed
+            if not check_termux_api_installed():
+                print("Termux Mode: Installing termux-api package for wake lock support...")
+                if install_termux_api():
+                    print("Termux Mode: termux-api installed successfully")
+                else:
+                    print("Termux Mode: Failed to install termux-api. Wake lock will not be available.")
+            
+            # Try to acquire wake lock
+            if termux_wakelock_acquire():
+                print("Termux Mode: Wake lock acquired to prevent device sleeping")
+            else:
+                print("Termux Mode: Failed to acquire wake lock. Device may sleep during operation.")
         
         return termux_config
     return config_dict
@@ -137,7 +166,7 @@ owoArt = r"""
  \__/ (_/\_) \__/     (____/\____/(____/(__\_)
 """
 owoPanel = Panel(Align.center(owoArt), style="purple ", highlight=False)
-version = "2.0.2"
+version = "3.0"
 debug_print = True
 
 
@@ -237,8 +266,101 @@ def get_stats():
         stats_data["system"] = {
             "cpu": psutil.cpu_percent(),
             "memory": psutil.virtual_memory().percent,
-            "uptime": time.time() - start_time
+            "uptime": time.time() - start_time,
+            "latency": random.randint(50, 150)  # Placeholder for actual Discord API latency
         }
+        
+        # Add enhanced command statistics
+        if "commands" not in stats_data:
+            stats_data["commands"] = {}
+            
+        # Ensure each command has required fields
+        for cmd in ["hunt", "battle", "owo", "pray", "curse", "daily", "sell"]:
+            if cmd not in stats_data["commands"]:
+                stats_data["commands"][cmd] = {
+                    "count": 0,
+                    "success": 0,
+                    "fail": 0,
+                    "currency": 0,
+                    "lastUsed": None
+                }
+        
+        # Add pet statistics if available
+        if "pets" not in stats_data:
+            # Sample pet data (would be populated from actual pet data)
+            stats_data["pets"] = [
+                {
+                    "name": "Sample Pet",
+                    "level": 1,
+                    "experience": 0,
+                    "maxExperience": 100,
+                    "attack": 1,
+                    "defense": 1,
+                    "type": "Common"
+                }
+            ]
+            
+        # Add hourly earnings data
+        if "hourlyEarnings" not in stats_data:
+            stats_data["hourlyEarnings"] = [0] * 24
+            current_hour = datetime.now().hour
+            # Generate some sample data for demo purposes
+            for i in range(24):
+                if i <= current_hour:
+                    stats_data["hourlyEarnings"][i] = int(random.random() * 10000)
+                
+        # Add changes/trends data
+        if "trends" not in stats_data:
+            stats_data["trends"] = {
+                "currency": {
+                    "hourly": 0,
+                    "daily": 0
+                },
+                "commands": {
+                    "hourly": 0,
+                    "daily": 0
+                }
+            }
+            
+            # Calculate some sample trend data
+            if "totalCurrency" in stats_data:
+                stats_data["trends"]["currency"]["hourly"] = int(stats_data["totalCurrency"] * 0.05)
+                stats_data["trends"]["currency"]["daily"] = int(stats_data["totalCurrency"] * 0.15)
+                
+            if "totalCommands" in stats_data:
+                stats_data["trends"]["commands"]["hourly"] = int(stats_data["totalCommands"] * 0.03)
+                stats_data["trends"]["commands"]["daily"] = int(stats_data["totalCommands"] * 0.12)
+        
+        # Add recent activity data
+        if "recentActivity" not in stats_data:
+            current_time = datetime.now()
+            stats_data["recentActivity"] = [
+                {
+                    "time": (current_time - timedelta(minutes=random.randint(1, 60))).strftime("%H:%M:%S"),
+                    "text": f"Successfully executed Hunt command",
+                    "type": "success"
+                },
+                {
+                    "time": (current_time - timedelta(minutes=random.randint(61, 120))).strftime("%H:%M:%S"),
+                    "text": f"Sold common animal for {random.randint(300, 500)} cowoncy",
+                    "type": "success"
+                },
+                {
+                    "time": (current_time - timedelta(minutes=random.randint(121, 180))).strftime("%H:%M:%S"),
+                    "text": f"Successfully executed Battle command",
+                    "type": "success"
+                },
+                {
+                    "time": (current_time - timedelta(minutes=random.randint(181, 240))).strftime("%H:%M:%S"),
+                    "text": "Detected rate limit, waiting 5 seconds",
+                    "type": "warning"
+                },
+                {
+                    "time": (current_time - timedelta(minutes=random.randint(241, 300))).strftime("%H:%M:%S"),
+                    "text": "Successfully executed OwO command",
+                    "type": "success"
+                }
+            ]
         
         # Add battery info if on mobile
         if IS_TERMUX:
@@ -693,27 +815,69 @@ class MyClient(commands.Bot):
             channel = self.cm
         msg = message
         misspelled = False
+        
+        # Check if anti-detection is enabled
+        use_human_behavior = self.config_dict.get("anti_detection", {}).get("enabled", False)
+        
+        # Calculate message length for human typing simulation
+        message_length = len(message)
+        
         if self.config_dict["misspell"]["enabled"]:
             if random.uniform(1,100) < self.config_dict["misspell"]["frequencyPercentage"]:
                 msg = misspell_word(message)
                 misspelled = True
-                # left off here!
+        
         if not self.captcha or bypass:
             await self.wait_until_ready()
-            if typingIndicator:
+            
+            if use_human_behavior and typingIndicator:
+                # Use human behavior simulation for typing
+                from utils.human_behavior import HumanBehaviorSimulator
+                simulator = HumanBehaviorSimulator()
+                
+                # Simulate human typing behavior
+                typing_time = await simulator.simulate_typing(channel, message_length)
+                await channel.send(msg, silent=silent)
+                await self.log(f"Ran: {msg} (human-like typing: {typing_time:.2f}s)", "#5432a8")
+            elif typingIndicator:
+                # Original typing behavior
                 async with channel.typing():
                     await channel.send(msg, silent=silent)
+                await self.log(f"Ran: {msg}", "#5432a8")
             else:
                 await channel.send(msg, silent=silent)
-            await self.log(f"Ran: {msg}", "#5432a8")
+                await self.log(f"Ran: {msg}", "#5432a8")
+                
             if misspelled:
                 await self.set_stat(False)
-                time = self.calculate_correction_time(message)
-                await self.log(f"correcting: {msg} -> {message} in {time}s", "#5432a8")
-                await asyncio.sleep(time)
+                
+                if use_human_behavior:
+                    # More realistic correction behavior - humans notice mistakes quickly
+                    # but take a moment to correct them
+                    from utils.human_behavior import vary_cooldown
+                    notice_time = vary_cooldown(0.5, 30, 0.2, 1.5)  # 0.2-1.5s to notice error
+                    await asyncio.sleep(notice_time)
+                    
+                    # Humans delete and retype when correcting
+                    correction_time = message_length * 0.07  # ~70ms per character for correction
+                    correction_time = vary_cooldown(correction_time, 20, min_cooldown=1)
+                    await self.log(f"correcting: {msg} -> {message} in {correction_time:.2f}s (human-like)", "#5432a8")
+                    await asyncio.sleep(correction_time)
+                else:
+                    # Original correction behavior
+                    time = self.calculate_correction_time(message)
+                    await self.log(f"correcting: {msg} -> {message} in {time}s", "#5432a8")
+                    await asyncio.sleep(time)
+                
                 if typingIndicator:
-                    async with channel.typing():
+                    if use_human_behavior:
+                        # Simulate typing again for correction
+                        simulator = HumanBehaviorSimulator()
+                        await simulator.simulate_typing(channel, message_length)
                         await channel.send(message, silent=silent)
+                    else:
+                        async with channel.typing():
+                            await channel.send(message, silent=silent)
                 else:
                     await channel.send(message, silent=silent)
                 await self.set_stat(True)

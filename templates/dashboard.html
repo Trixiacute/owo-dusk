@@ -12,11 +12,27 @@
     
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='advanced_dashboard.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      .watermark {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 8vw;
+        color: rgba(0, 0, 0, 0.08);
+        pointer-events: none;
+        user-select: none;
+        z-index: 1000;
+        white-space: nowrap;
+      }
+    </style>
     <title>OwO-Dusk Dashboard - {{version}}</title>
   </head>
 
   <body>
+    <div class="watermark">皇城KTV</div>
     <header class="top-nav">
       <div class="nav-wrapper">
         <div class="logo">
@@ -34,100 +50,184 @@
       </div>
     </header>
 
-    <div class="dashboard-container">
+    <div class="advanced-dashboard-container">
       <!-- Stats Overview -->
-      <div class="stats-card overview">
-        <h2 class="card-title">Statistics Overview</h2>
-        <div class="stats-grid">
-          <div class="stat-item">
-            <div class="stat-value" id="total-commands">0</div>
-            <div class="stat-label">Commands Sent</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="total-currency">0</div>
-            <div class="stat-label">Total Earned</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="runtime">0h</div>
-            <div class="stat-label">Runtime</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="success-rate">0%</div>
-            <div class="stat-label">Success Rate</div>
+      <div class="advanced-card card-full">
+        <div class="card-title-advanced">
+          <span>Statistics Overview</span>
+          <div class="card-actions">
+            <button class="card-action-btn" title="Refresh"><i>↻</i></button>
           </div>
         </div>
-      </div>
-
-      <!-- Currency Chart -->
-      <div class="stats-card chart-card">
-        <h2 class="card-title">Currency Earned</h2>
-        <div class="chart-container">
-          <canvas id="currencyChart"></canvas>
-        </div>
-      </div>
-
-      <!-- Commands Chart -->
-      <div class="stats-card chart-card">
-        <h2 class="card-title">Commands Executed</h2>
-        <div class="chart-container">
-          <canvas id="commandsChart"></canvas>
-        </div>
-      </div>
-
-      <!-- Activity Timeline -->
-      <div class="stats-card timeline-card">
-        <h2 class="card-title">Activity Timeline</h2>
-        <div class="timeline">
-          <div id="timeline-content">
-            <!-- Timeline content will be populated by JavaScript -->
+        <div class="advanced-stats-display">
+          <div class="advanced-stat-item">
+            <div class="stat-icon">💰</div>
+            <div class="stat-value-large" id="total-currency">0</div>
+            <div class="stat-label-advanced">Total Earned</div>
+            <div class="stat-change positive" id="currency-change">+0%</div>
+          </div>
+          <div class="advanced-stat-item">
+            <div class="stat-icon">⌨️</div>
+            <div class="stat-value-large" id="total-commands">0</div>
+            <div class="stat-label-advanced">Commands Sent</div>
+            <div class="stat-change positive" id="commands-change">+0%</div>
+          </div>
+          <div class="advanced-stat-item">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-value-large" id="runtime">0h</div>
+            <div class="stat-label-advanced">Runtime</div>
+          </div>
+          <div class="advanced-stat-item">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value-large" id="success-rate">0%</div>
+            <div class="stat-label-advanced">Success Rate</div>
           </div>
         </div>
       </div>
 
-      <!-- Recent Events -->
-      <div class="stats-card events-card">
-        <h2 class="card-title">Recent Events</h2>
-        <div class="events-list" id="events-list">
-          <!-- Events will be populated by JavaScript -->
+      <!-- Income Distribution Chart -->
+      <div class="advanced-card card-half">
+        <div class="card-title-advanced">
+          <span>Income Distribution</span>
+          <div class="card-actions">
+            <button class="card-action-btn" title="Refresh"><i>↻</i></button>
+          </div>
+        </div>
+        <div class="advanced-chart-container">
+          <canvas id="incomeDistributionChart"></canvas>
         </div>
       </div>
 
-      <!-- System Health -->
-      <div class="stats-card health-card">
-        <h2 class="card-title">System Health</h2>
+      <!-- Command Success Rate Chart -->
+      <div class="advanced-card card-half">
+        <div class="card-title-advanced">
+          <span>Command Success Rate</span>
+          <div class="card-actions">
+            <button class="card-action-btn" title="Refresh"><i>↻</i></button>
+          </div>
+        </div>
+        <div class="advanced-chart-container">
+          <canvas id="commandSuccessChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Hourly Earnings Chart -->
+      <div class="advanced-card card-full">
+        <div class="card-title-advanced">
+          <span>Earnings Distribution</span>
+          <div class="card-actions">
+            <button class="card-action-btn" title="Refresh"><i>↻</i></button>
+          </div>
+        </div>
+        <div class="advanced-chart-container">
+          <canvas id="hourlyEarningsChart"></canvas>
+        </div>
+        <div class="time-period-selector">
+          <button class="time-selector active" data-period="hourly" data-target="hourlyEarningsChart">Hourly</button>
+          <button class="time-selector" data-period="daily" data-target="hourlyEarningsChart">Daily</button>
+          <button class="time-selector" data-period="weekly" data-target="hourlyEarningsChart">Weekly</button>
+        </div>
+      </div>
+
+      <!-- System Resources -->
+      <div class="advanced-card card-half">
+        <div class="card-title-advanced">
+          <span>System Resources</span>
+          <div class="card-actions">
+            <button class="card-action-btn" title="Refresh"><i>↻</i></button>
+          </div>
+        </div>
+        <div class="advanced-chart-container">
+          <canvas id="resourceUsageChart"></canvas>
+        </div>
         <div class="health-metrics">
           <div class="metric">
             <span class="metric-name">CPU Usage:</span>
             <div class="progress-bar">
               <div class="progress" id="cpu-usage" style="width: 0%"></div>
             </div>
-            <span class="metric-value">0%</span>
+            <span class="metric-value" id="cpu-usage-value">0%</span>
           </div>
           <div class="metric">
             <span class="metric-name">Memory:</span>
             <div class="progress-bar">
               <div class="progress" id="memory-usage" style="width: 0%"></div>
             </div>
-            <span class="metric-value">0%</span>
+            <span class="metric-value" id="memory-usage-value">0%</span>
           </div>
           <div class="metric">
             <span class="metric-name">Latency:</span>
             <div class="progress-bar">
               <div class="progress" id="latency" style="width: 0%"></div>
             </div>
-            <span class="metric-value">0ms</span>
+            <span class="metric-value" id="latency-value">0ms</span>
           </div>
-          <div class="metric" id="battery-container">
+          <div class="metric" id="battery-container" style="display: none;">
             <span class="metric-name">Battery:</span>
             <div class="progress-bar">
               <div class="progress" id="battery" style="width: 0%"></div>
             </div>
-            <span class="metric-value">0%</span>
+            <span class="metric-value" id="battery-value">0%</span>
           </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="advanced-card card-half">
+        <div class="card-title-advanced">
+          <span>Recent Activity</span>
+          <div class="card-actions">
+            <button class="card-action-btn" title="Refresh"><i>↻</i></button>
+          </div>
+        </div>
+        <div class="advanced-timeline" id="advanced-timeline">
+          <!-- Timeline will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Command Statistics Table -->
+      <div class="advanced-card card-full">
+        <div class="card-title-advanced">
+          <span>Command Statistics</span>
+          <div class="card-actions">
+            <button class="card-action-btn" title="Refresh"><i>↻</i></button>
+          </div>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="advanced-table" id="command-stats-table">
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>Total</th>
+                <th>Success</th>
+                <th>Fail</th>
+                <th>Success Rate</th>
+                <th>Earnings</th>
+                <th>Last Used</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Will be populated by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pet Statistics -->
+      <div class="advanced-card card-full">
+        <div class="card-title-advanced">
+          <span>Pet Statistics</span>
+          <div class="card-actions">
+            <button class="card-action-btn" title="Refresh"><i>↻</i></button>
+          </div>
+        </div>
+        <div class="pet-stats-container" id="pet-stats-container">
+          <!-- Will be populated by JavaScript -->
         </div>
       </div>
     </div>
 
     <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='advanced_stats.js') }}"></script>
   </body>
 </html> 

@@ -178,15 +178,20 @@ class ChannelSwitcher(commands.Cog):
                 channel = self.original_channel
                 
                 # Check for any channel with thread permissions
-                if not channel.permissions_for(channel.guild.me).create_public_threads:
+                if channel and hasattr(channel, 'guild') and not channel.permissions_for(channel.guild.me).create_public_threads:
                     for ch in self.available_channels:
                         if hasattr(ch, 'guild') and ch.permissions_for(ch.guild.me).create_public_threads:
                             channel = ch
                             break
             
+            # Check if channel exists
+            if not channel:
+                await self.bot.log("Cannot create thread: no valid channel found", "#af7070")
+                return None
+                
             # Check permissions
             if not hasattr(channel, 'guild') or not channel.permissions_for(channel.guild.me).create_public_threads:
-                await self.bot.log(f"Cannot create thread in {channel.name}: missing permissions", "#af7070")
+                await self.bot.log(f"Cannot create thread in {getattr(channel, 'name', 'unknown')}: missing permissions", "#af7070")
                 return None
             
             # Generate random thread name if not provided
@@ -203,12 +208,12 @@ class ChannelSwitcher(commands.Cog):
                     auto_archive_duration=1440  # 24 hours
                 )
             except Exception as e:
-                await self.bot.log(f"Failed to create thread in {channel.name}: {e}", "#af7070")
+                await self.bot.log(f"Failed to create thread in {getattr(channel, 'name', 'unknown')}: {e}", "#af7070")
                 return None
                 
             # Check if thread was created successfully
             if thread is None:
-                await self.bot.log(f"Thread creation failed in {channel.name}: returned None", "#af7070")
+                await self.bot.log(f"Thread creation failed in {getattr(channel, 'name', 'unknown')}: returned None", "#af7070")
                 return None
             
             # Add to available threads
@@ -229,26 +234,32 @@ class ChannelSwitcher(commands.Cog):
             if not threads_config.get("enabled", False):
                 self.bot.config_dict["channel_switcher"]["threads"]["enabled"] = True
             
-            if channel.id != threads_config.get("parent_channel", 0):
+            # Ensure channel exists before accessing channel.id
+            if channel and hasattr(channel, 'id') and channel.id != threads_config.get("parent_channel", 0):
                 self.bot.config_dict["channel_switcher"]["threads"]["parent_channel"] = channel.id
             
             thread_ids = threads_config.get("thread_ids", [])
             if not isinstance(thread_ids, list):
                 thread_ids = []
+            
+            # Ensure thread exists and has id before appending
+            if thread and hasattr(thread, 'id'):
+                thread_ids.append(thread.id)
+                self.bot.config_dict["channel_switcher"]["threads"]["thread_ids"] = thread_ids
                 
-            thread_ids.append(thread.id)
-            self.bot.config_dict["channel_switcher"]["threads"]["thread_ids"] = thread_ids
-            
-            # Save config
-            with open("config.json", "w") as config_file:
-                json.dump(self.bot.config_dict, config_file, indent=4)
-            
-            await self.bot.log(f"Created new thread: {thread.name} ({thread.id})", "#70af87")
-            
-            # Switch to the new thread
-            await self.switch_channel(specific_thread=thread.id)
-            
-            return thread
+                # Save config
+                with open("config.json", "w") as config_file:
+                    json.dump(self.bot.config_dict, config_file, indent=4)
+                
+                await self.bot.log(f"Created new thread: {thread.name} ({thread.id})", "#70af87")
+                
+                # Switch to the new thread
+                await self.switch_channel(specific_thread=thread.id)
+                
+                return thread
+            else:
+                await self.bot.log("Thread was created but has no valid ID", "#af7070")
+                return None
         
         except Exception as e:
             await self.bot.log(f"Error creating thread: {e}", "#af7070")
@@ -306,6 +317,10 @@ class ChannelSwitcher(commands.Cog):
     async def analyze_channel_safety(self, channel):
         """Analyze if a channel is safe for bot usage"""
         try:
+            # Check if channel is None or invalid
+            if channel is None or not hasattr(channel, 'id'):
+                return 0  # Not safe at all
+                
             safety_score = 100  # Start with perfect score
             
             # Check for slowmode
@@ -315,11 +330,13 @@ class ChannelSwitcher(commands.Cog):
             # Check message volume from other users
             user_message_count = 0
             try:
-                async for message in channel.history(limit=50):
-                    if message.author.id != self.bot.user.id and message.author.id != self.bot.owo_bot_id:
-                        user_message_count += 1
-            except Exception:
+                if hasattr(channel, 'history'):
+                    async for message in channel.history(limit=50):
+                        if hasattr(message, 'author') and hasattr(message.author, 'id') and message.author.id != self.bot.user.id and message.author.id != self.bot.owo_bot_id:
+                            user_message_count += 1
+            except Exception as e:
                 # If we can't check history, assume it's risky
+                await self.bot.log(f"Error checking message history in channel {getattr(channel, 'name', 'unknown')}: {e}", "#af7070")
                 safety_score -= 20
             
             # Adjust score based on message volume
@@ -335,12 +352,15 @@ class ChannelSwitcher(commands.Cog):
                 safety_score += 20
             
             # Check member count in guild
-            if hasattr(channel, 'guild') and channel.guild.member_count > 1000:
+            if hasattr(channel, 'guild') and hasattr(channel.guild, 'member_count') and channel.guild.member_count > 1000:
                 safety_score -= 20
+            
+            # Ensure score is within valid range
+            safety_score = max(0, min(100, safety_score))
             
             return safety_score
         except Exception as e:
-            await self.bot.log(f"Error analyzing channel safety: {e}", "#af7070")
+            await self.bot.log(f"Error analyzing channel safety for {getattr(channel, 'name', 'unknown')}: {e}", "#af7070")
             return 30  # Default to somewhat unsafe if analysis fails
 
     @tasks.loop(seconds=60)
@@ -382,11 +402,11 @@ class ChannelSwitcher(commands.Cog):
         async with self.switch_lock:
             available_targets = []
             
-            # Add available channels
-            available_targets.extend(self.available_channels)
+            # Add available channels - filter out None
+            available_targets.extend([c for c in self.available_channels if c is not None])
             
-            # Add available threads
-            available_targets.extend(self.available_threads)
+            # Add available threads - filter out None
+            available_targets.extend([t for t in self.available_threads if t is not None])
             
             # Add original channel if it's not already in the list
             if self.original_channel and self.original_channel not in available_targets:
@@ -399,7 +419,7 @@ class ChannelSwitcher(commands.Cog):
                 if self.bot.config_dict.get("channel_switcher", {}).get("auto_create_thread", False):
                     thread = await self.create_new_thread()
                     # Only return if thread was successfully created
-                    if thread:
+                    if thread and hasattr(thread, 'id'):
                         return True
                 return False
             
@@ -476,11 +496,17 @@ class ChannelSwitcher(commands.Cog):
                     try:
                         safety_score = await self.analyze_channel_safety(channel)
                         
+                        # Ensure the channel meets minimum safety requirements
+                        min_safety = self.bot.config_dict.get("channel_switcher", {}).get("safety_features", {}).get("min_safety_score", 40)
+                        if safety_score < min_safety:
+                            await self.bot.log(f"Channel {getattr(channel, 'name', 'unknown')} safety score {safety_score} below minimum {min_safety}", "#af7070")
+                            continue
+                        
                         if safety_score > highest_safety:
                             highest_safety = safety_score
                             safest_channel = channel
                     except Exception as e:
-                        await self.bot.log(f"Error analyzing channel {channel.id if hasattr(channel, 'id') else 'unknown'}: {e}", "#af7070")
+                        await self.bot.log(f"Error analyzing channel {getattr(channel, 'id', 'unknown')}: {e}", "#af7070")
                         continue  # Skip this channel if analysis fails
                 
                 if safest_channel:
@@ -516,6 +542,11 @@ class ChannelSwitcher(commands.Cog):
                 return False
                 
             try:
+                # Final validation before switching
+                if not hasattr(new_channel, 'id') or not hasattr(new_channel, 'name'):
+                    await self.bot.log("Selected channel is invalid (missing id or name)", "#af7070")
+                    return False
+                
                 self.bot.cm = new_channel
                 self.active_channel = new_channel
                 self.last_switch_time = time.time()

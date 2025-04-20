@@ -30,6 +30,28 @@ I am aware that I am still using names from slashy for containers and stuff
 I'll rename them to  a suitable name when I have time
 */
 
+/* Watermark Styles */
+.watermark {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 24px;
+  opacity: 0.15;
+  color: #ff79c3;
+  pointer-events: none;
+  z-index: 9999;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  transform: rotate(-15deg);
+  animation: watermark-pulse 20s infinite ease-in-out;
+}
+
+@keyframes watermark-pulse {
+  0% { opacity: 0.15; }
+  50% { opacity: 0.2; }
+  100% { opacity: 0.15; }
+}
+
 * {
   /*global css*/
   padding: 0;

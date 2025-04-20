@@ -60,9 +60,15 @@ except ImportError:
 # Clear the screen
 clear_screen()
 
-print(
-    "\033[1;32mwelcome to OwO-Dusk\nThis setup will guide you through with the setup of OwO-Dusk\nThankyou for your trust in OwO-Dusk\033[m"
-)
+print(r"""
+  __   _  _   __       ____  _  _  ____  __ _ 
+ /  \ / )( \ /  \  ___(    \/ )( \/ ___)(  / )
+(  O )\ /\ /(  O )(___)) D () \/ (\___ \ )  ( 
+ \__/ (_/\_) \__/     (____/\____/(____/(__\_)
+    """)
+print("\nOwO Dusk - Version 3.0")
+print("A cross-platform Discord bot for OwO grinding")
+print("-------------------------------------------\n")
 
 """while True:
     user_input = input("[?]Do you want help setting this up from scratch? (Y/N):-\n").lower()

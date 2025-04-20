@@ -1,6 +1,6 @@
 # OwO Dusk
 
-![Version](https://img.shields.io/badge/version-2.0.2-blue)
+![Version](https://img.shields.io/badge/version-3.0-blue)
 ![License](https://img.shields.io/badge/license-GPL--3.0-green)
 
 A cross-platform Discord bot for OwO grinding that works on Windows, macOS, and Linux.
@@ -152,6 +152,20 @@ OwO-Dusk provides a special Termux mode optimized for mobile devices. This mode 
 1. Edit `config.json` and set `"termux_mode": { "enabled": true }`
 2. Restart the bot
 
+### Termux Optimizations
+
+- **Resource Optimization**: Automatically reduces memory usage and disables web UI
+- **Extended Text Commands**: Provides command-line control when GUI is unavailable
+- **Wake Lock Integration**: Prevents device from sleeping during bot operation
+- **Battery Monitoring**: Alerts when battery is low to prevent unexpected shutdowns
+- **Minimal Logging**: Reduces storage usage and improves performance
+
+### Enabling Wake Lock
+
+1. Install Termux:API package: `pkg install termux-api`
+2. Make sure `"use_wake_lock": true` is set in your config.json
+3. The bot will automatically acquire a wake lock on startup and release it on exit
+
 ### Termux Mode Text Commands
 
 Use the following commands with the `.` prefix (configurable):
@@ -163,38 +177,4 @@ Use the following commands with the `.` prefix (configurable):
 - `.stats` - Show statistics
 - `.cash` - Check current balance
 - `.commands` - List available commands
-- `.help` - Display help
-- `.restart` - Restart bot processes
-
-### Termux Mode Benefits
-
-- Lower CPU and memory usage
-- More efficient battery consumption
-- Reduced bandwidth usage
-- Faster and more responsive operation
-
-## Installation via Git
-
-```bash
-git clone https://github.com/echoqueill/owo-dusk.git
-cd owo-dusk
-pip install -r requirements.txt
-```
-
-## Basic Usage
-
-1. Edit `config.json` according to your needs
-2. Edit `tokens.txt` with your Discord token and channel ID
-3. Run the bot:
-
-```bash
-python uwu.py
-```
-
-## Configuration
-
-See `config.json` for complete configuration options.
-
-## Security Note
-
-Using selfbots may violate Discord's Terms of Service. Use at your own risk.
+- `.help`
